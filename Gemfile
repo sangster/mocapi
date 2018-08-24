@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'monetize', '~> 1.9'
 gem 'money', '~> 6.12'
 gem 'sinatra', '~> 2.0'
 gem 'sinatra-contrib', '~> 2.0'

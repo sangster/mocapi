@@ -14,7 +14,11 @@ SimpleCov.configure do
   load_adapter 'test_frameworks'
 end
 
-ENV["COVERAGE"] && SimpleCov.start
+ENV["COVERAGE"] && SimpleCov.start do
+  root = File.join(File.dirname(__FILE__), '..')
+  files = Pathname.new(root).glob('**/*').map(&:realpath)
+  add_filter { |file| !files.include?(Pathname.new(file.filename).realpath) }
+end
 
 require 'rubygems'
 require 'bundler'

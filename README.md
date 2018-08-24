@@ -4,24 +4,18 @@
 `mocapi` is a simple HTTPd application server which calculates mortgage payment
 given schedule and financial details provided by end users.
 
-## Installation
+## Usage
 
 ```sh
-gem install mocapi
-```
-
-## Example Usage
-
-```sh
+bundle # install dependencies
 bundle exec ./bin/mocapi
-# or with ENV variables
 
+# or with ENV variables:
 bundle exec ./bin/mocapi APP_ENV=production MAX_MORTGAGE=150_000_99 \
-    RATE_UNDER=0.1 RATE_OVER=0.2 RATE_INSURANCE_OPTIONAL=0.3 \
-    OVERAGE_FLOOR=100_000_00 \
+    RATE_UNDER=0.1 RATE_OVER=0.2 # etc...
 ```
 
-## Environmental Variables
+### Environmental Variables
 
 The constants used by `mocapi` to calculate payments and mortgages can be
 altered at startup via environmental variables:
@@ -35,12 +29,97 @@ altered at startup via environmental variables:
 | `MAX_MORTGAGE` | `1_000_000_00` | The maximum mortgage (in cents) that insurance can be provided for. Mortgages above this limit will require a large enough downpayment or an error will be returned |
 | `MORTGAGE_INTEREST` | `0.025` | The default mortgage interest when the application boots. Users may change this value with `PATCH /interest-rate` |
 
+### Routes
+
+#### GET /payment-amount
+
+Get the recurring payment amount of a mortgage (in cents).
+
+| Parameter | Description |
+| --- | --- |
+| `mortgage` | The total mortgage, in cents |
+| `downpayment` | The down payent, in cents |
+| `schedule` | The payment schedule. Either `'weekly'`, `'biweekly'`, or `'monthly'`|
+| `amortization` | The duration of the mortgage, in whole years |
+
+##### Example cURL
+
+```sh
+curl -i -X GET -H "Accept: application/json" \
+     -d 'mortgage=10000000&downpayment=2000000&schedule=weekly&amortization=10' \
+     'localhost:4567/payment-amount'
+```
+
+**Output**
+
+```json
+{
+  "amount": 15769
+}
+```
+
+#### GET /mortgage-amount
+
+Get the maximum mortgage amount (in cents).
+
+| Parameter | Description |
+| --- | --- |
+| `payment` | The payment amount, in cents |
+| `downpayment` | An *optional* down payent, in cents |
+| `schedule` | The payment schedule. Either `'weekly'`, `'biweekly'`, or `'monthly'`|
+| `amortization` | The duration of the mortgage, in whole years |
+
+##### Example cURL
+
+```sh
+curl -i -X GET -H "Accept: application/json" \
+     -d 'payment=10000&schedule=weekly&amortization=20' \
+     'localhost:4567/mortgage-amount'
+```
+
+**Output**
+
+```json
+{
+  "maximum": 10400000
+}
+```
+
+#### PATCH /interest-rate
+
+Change the interest rate used by the application.
+
+| Parameter | Description |
+| --- | --- |
+| `payment` | The payment amount, in cents |
+| `downpayment` | An *optional* down payent, in cents |
+| `schedule` | The payment schedule. Either `'weekly'`, `'biweekly'`, or `'monthly'`|
+| `amortization` | The duration of the mortgage, in whole years |
+
+##### Example cURL
+
+```sh
+curl -i -X PATCH -H "Accept: application/json" \
+     -d 'interest=0.0355' \
+     'localhost:4567/interest-rate'
+```
+
+**Output**
+
+```json
+{
+  "old": 0.025,
+  "new": 0.0355
+}
+```
+
 ## Development
 
 ### Testing
 
 A few Rake commands will help your testing:
 
+  - `bundle exec guard`: Start Red/Green development cycle
   - `rake test`: Run the test suite
   - `rake lint`: Run the code linters
   - `rake simplecov`: Run the code coverage reporter
