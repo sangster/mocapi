@@ -1,9 +1,5 @@
 # Mocapi
 
-[![Gem Version](https://badge.fury.io/rb/mocapi.svg)](https://badge.fury.io/rb/mocapi)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e5ff3fe936709bf32593/maintainability)](https://codeclimate.com/github/sangster/mocapi/maintainability)
-[![GitHub license](https://img.shields.io/github/license/sangster/mocapi.svg)](https://github.com/sangster/mocapi/blob/master/LICENSE.txt)
-
 
 `mocapi` is a simple HTTPd application server which calculates mortgage payment
 given schedule and financial details provided by end users.
@@ -17,7 +13,27 @@ gem install mocapi
 ## Example Usage
 
 ```sh
+bundle exec ./bin/mocapi
+# or with ENV variables
+
+bundle exec ./bin/mocapi APP_ENV=production MAX_MORTGAGE=150_000_99 \
+    RATE_UNDER=0.1 RATE_OVER=0.2 RATE_INSURANCE_OPTIONAL=0.3 \
+    OVERAGE_FLOOR=100_000_00 \
 ```
+
+## Environmental Variables
+
+The constants used by `mocapi` to calculate payments and mortgages can be
+altered at startup via environmental variables:
+
+| Variable | Default Value | Description |
+| --- | --- | --- |
+| `APP_ENV` | `'development'` | Sinatra's runmode: `'development'` or `'production'` |
+| `RATE_UNDER` | `0.05` | The required rate of downpayment for the portion of a mortgage below `OVERAGE_FLOOR` |
+| `RATE_OVER` | `0.10` | The required rate of downpayment for the portion of a mortgage over `OVERAGE_FLOOR` |
+| `OVERAGE_FLOOR` | `500_000_00` | The mortgage amount (in cents) above which a downpayment of `RATE_OVER` is required, instead of `RATE_UNDER` |
+| `MAX_MORTGAGE` | `1_000_000_00` | The maximum mortgage (in cents) that insurance can be provided for. Mortgages above this limit will require a large enough downpayment or an error will be returned |
+| `MORTGAGE_INTEREST` | `0.025` | The default mortgage interest when the application boots. Users may change this value with `PATCH /interest-rate` |
 
 ## Development
 

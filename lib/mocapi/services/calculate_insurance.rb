@@ -3,12 +3,12 @@ module Mocapi
     # Calicate which [Models::Insurance] is required for a particular
     # downpayment on a mortgage.
     class CalculateInsurance
-      MAX_MORTGAGE = Money.new(1_000_000_00)
+      MAX_MORTGAGE = Money.new(ENV['MAX_MORTGAGE']&.to_i || 1_000_000_00)
       RATE_MIN_DOWNPAYMENT = 0.05
       RATES = {
         0.10 => 0.0315,
         0.15 => 0.024,
-        0.20 => 0.018,
+        0.20 => 0.018
       }.freeze
 
       def initialize(downpayment, mortgage)
@@ -30,20 +30,20 @@ module Mocapi
       private
 
       def validate_min_rate!
-        if @rate < RATE_MIN_DOWNPAYMENT
-          raise Errors::InvalidDownpayment,
-                format('%s (%f%%) is too small a downpayment for %s. Must be ' \
-                       'at least %f%%', @downpayment, @rate * 100, @mortgage,
-                       RATE_MIN_DOWNPAYMENT * 100)
-        end
+        return unless @rate < RATE_MIN_DOWNPAYMENT
+
+        raise Errors::InvalidDownpayment,
+              format('$%s (%f%%) is too small a downpayment for $%s. Must ' \
+                     'be at least %f%%', @downpayment, @rate * 100, @mortgage,
+                     RATE_MIN_DOWNPAYMENT * 100)
       end
 
       def validate_max_mortgage!
-        if @mortgage > MAX_MORTGAGE
-          raise Errors::InsuranceUnavailable,
-                format('Insurance is not available for a %s mortgage, which ' \
-                       'is over the limit of %s', @mortgage, MAX_MORTGAGE)
-        end
+        return unless @mortgage > MAX_MORTGAGE
+
+        raise Errors::InsuranceUnavailable,
+              format('Insurance is not available for a $%s mortgage, which ' \
+                     'is over the limit of $%s', @mortgage, MAX_MORTGAGE)
       end
     end
   end

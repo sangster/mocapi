@@ -7,8 +7,8 @@ module Mocapi
       def initialize(years)
         unless VALID_RANGE.include?(years)
           raise ArgumentError,
-            format('Amortization of %d years is not within valid range of %p',
-                   years, VALID_RANGE)
+                format('Amortization of %d years is not within valid range: %p',
+                       years, VALID_RANGE)
         end
 
         @years = years

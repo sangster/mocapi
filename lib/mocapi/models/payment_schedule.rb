@@ -2,14 +2,15 @@ module Mocapi
   module Models
     class PaymentSchedule
       PERIODS = {
-        weekly:   1/52r,
-        biweekly: 2/52r,
-        monthly:  1/12r,
+        weekly:   1 / 52r,
+        biweekly: 2 / 52r,
+        monthly:  1 / 12r
       }.freeze
 
-      # @param period [Symbol] Must be one of: +:weekly+, +:biweekly+, +:monthly+
+      # @param period [Symbol] Must be one of: +:weekly+, +:biweekly+,
+      #   +:monthly+
       def initialize(period)
-        unless PERIODS.keys.include?(period)
+        unless PERIODS.key?(period)
           raise ArgumentError, format('Unknown payment schedule: %s', period)
         end
 

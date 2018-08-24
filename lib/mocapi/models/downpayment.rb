@@ -1,12 +1,10 @@
 module Mocapi
   module Models
     class Downpayment < Money
-      RATE_UNDER = 0.05
-      RATE_OVER = 0.10
-
-      RATE_INSURANCE_OPTIONAL = 0.20
-
-      OVERAGE_FLOOR = Money.new(500_000_00).freeze
+      RATE_UNDER = ENV['RATE_UNDER']&.to_f || 0.05
+      RATE_OVER = ENV['RATE_OVER']&.to_f || 0.10
+      RATE_INSURANCE_OPTIONAL = ENV['RATE_INSURANCE_OPTIONAL']&.to_f || 0.20
+      OVERAGE_FLOOR = Money.new(ENV['OVERAGE_FLOOR']&.to_f || 500_000_00).freeze
 
       class << self
         # @param mortgage [Money, Integer]

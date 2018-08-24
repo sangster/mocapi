@@ -1,11 +1,21 @@
 module Mocapi
   class Server < Sinatra::Base
-    MORTGAGE_INTEREST_DEFAULT = 0.025
-
     set :server, 'thin'
-    set :interest, ENV['MORTGAGE_INTEREST']&.to_f || MORTGAGE_INTEREST_DEFAULT
+    set :interest, ENV['MORTGAGE_INTEREST']&.to_f || 0.025
 
     get '/payment-amount' do
+      service =
+        Services::PaymountAmount.new(
+          downpayment: Money.new(Integer(params['downpayment'])),
+          mortgage: Money.new(Integer(params['mortgage'])),
+          schedule: Models::PaymentSchedule.new(params['schedule']&.to_sym),
+          interest_rate: settings.interest,
+          amortization: Models::AmortizationPeriod.new(
+            Integer(params['amortization'])
+          )
+        )
+
+      json amount: service.call.cents
     end
 
     # Render the maximum mortgage (in cents) for the given payment schedule
@@ -14,8 +24,10 @@ module Mocapi
         Services::MaximumMortgage.new(
           payment: Money.new(Integer(params['payment'])),
           schedule: Models::PaymentSchedule.new(params['schedule']&.to_sym),
-          amortization: Models::AmortizationPeriod.new(Integer(params['amortization'])),
-          downpayment: Money.new(params['downpayment']&.to_i)
+          downpayment: Money.new(params['downpayment']&.to_i),
+          amortization: Models::AmortizationPeriod.new(
+            Integer(params['amortization'])
+          )
         )
 
       json maximum: service.call.cents
@@ -33,7 +45,7 @@ module Mocapi
       status 400
       json error: {
         code: response.status,
-        message: env['sinatra.error'].message,
+        message: env['sinatra.error'].message
       }
     end
 

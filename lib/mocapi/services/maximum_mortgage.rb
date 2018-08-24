@@ -5,7 +5,8 @@ module Mocapi
       # @param schedule [PaymentSchedule]
       # @param amortization [AmortizationPeriod]
       # @param downpayment [Money]
-      def initialize(payment:, schedule:, amortization:, downpayment: Money.empty)
+      def initialize(payment:, schedule:, amortization:,
+                     downpayment: Money.empty)
         @payment = payment
         @schedule = schedule
         @amortization = amortization
@@ -24,7 +25,9 @@ module Mocapi
       end
 
       def insurance
-        CalculateInsurance.new(@downpayment, @payment).call if @downpayment.positive?
+        if @downpayment.positive?
+          CalculateInsurance.new(@downpayment, @payment).call
+        end
       end
     end
   end

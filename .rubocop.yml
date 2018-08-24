@@ -28,6 +28,12 @@ Style/AsciiComments:
 Style/ClassAndModuleChildren:
   Enabled: False
 
+Style/Documentation:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
 Style/StderrPuts:
   Enabled: False
 
