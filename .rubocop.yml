@@ -1,0 +1,35 @@
+AllCops:
+  Exclude:
+    - test/**/*
+    - "*.gemspec"
+
+  TargetRubyVersion:
+    2.5
+
+GuardClause:
+  MinBodyLength: 3
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+MethodLength:
+  Severity: warning
+  Max: 15
+
+Metrics/AbcSize:
+  Max: 20
+
+Style/AndOr:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: False
+
+Style/StderrPuts:
+  Enabled: False
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
